@@ -17,5 +17,9 @@
   "bugs": {
     "url": "https://github.com/EyosiSol/AuremApi/issues"
   },
-  "homepage": "https://github.com/EyosiSol/AuremApi#readme"
+  "homepage": "https://github.com/EyosiSol/AuremApi#readme",
+  "dependencies": {
+    "dotenv": "^17.2.1",
+    "mongodb": "^6.18.0"
+  }
 }
