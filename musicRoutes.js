@@ -52,4 +52,25 @@ musicRoutes.route("/musics").post(async (req, res) => {
   }
 });
 
+musicRoutes.route("/musics/:id").put(async (req, res) => {
+  try {
+    const db = database.getDb();
+    let data = {
+      $set: {
+        title: req.body.title,
+        artist: req.body.artist,
+        album: req.body.album,
+        releaseDate: req.body.releaseDate,
+        genre: req.body.genre,
+      },
+    };
+    let result = await db
+      .collection("musics")
+      .updateOne({ _id: new ObjectId(req.params.id) }, data);
+    res.json(result);
+  } catch (err) {
+    res.status(401).json({ err: err.message });
+  }
+});
+
 module.exports = musicRoutes;
