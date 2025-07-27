@@ -1,0 +1,21 @@
+{
+  "name": "auremapi",
+  "version": "1.0.0",
+  "description": "Aurem is a music managment platform that is used to save up music with their artist and album name.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/EyosiSol/AuremApi.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/EyosiSol/AuremApi/issues"
+  },
+  "homepage": "https://github.com/EyosiSol/AuremApi#readme"
+}
