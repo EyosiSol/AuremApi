@@ -4,6 +4,7 @@
   "description": "Aurem is a music managment platform that is used to save up music with their artist and album name.",
   "main": "index.js",
   "scripts": {
+    "start": "node server.js",
     "dev": "nodemon",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
