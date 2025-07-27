@@ -52,6 +52,7 @@ musicRoutes.route("/musics").post(async (req, res) => {
   }
 });
 
+// UPDATE | PATCH & PUT
 musicRoutes.route("/musics/:id").put(async (req, res) => {
   try {
     const db = database.getDb();
@@ -67,6 +68,41 @@ musicRoutes.route("/musics/:id").put(async (req, res) => {
     let result = await db
       .collection("musics")
       .updateOne({ _id: new ObjectId(req.params.id) }, data);
+    res.json(result);
+  } catch (err) {
+    res.status(401).json({ err: err.message });
+  }
+});
+
+musicRoutes.route("/musics/:id").patch(async (req, res) => {
+  try {
+    const db = database.getDb();
+    let data = {
+      $set: {
+        title: req.body.title,
+        artist: req.body.artist,
+        album: req.body.album,
+        releaseDate: req.body.releaseDate,
+        genre: req.body.genre,
+      },
+    };
+    let result = await db
+      .collection("musics")
+      .updateOne({ _id: new ObjectId(req.params.id) }, data);
+    res.json(result);
+  } catch (err) {
+    res.status(401).json({ err: err.message });
+  }
+});
+
+// Delete
+
+musicRoutes.route("/musics/:id").delete(async (req, res) => {
+  try {
+    const db = database.getDb();
+    let result = await db
+      .collection("musics")
+      .deleteOne({ _id: new ObjectId(req.params.id) });
     res.json(result);
   } catch (err) {
     res.status(401).json({ err: err.message });
