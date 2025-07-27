@@ -3,8 +3,8 @@ const database = require("./connect");
 const ObjectId = require("mongodb").ObjectId;
 
 const musicRoutes = express.Router();
-//GET MUSICS with Search or Not
 
+// READ | GET MUSICS with Search or Not
 musicRoutes.route("/musics").get(async (req, res) => {
   const search = req.query.q?.trim(); // <- updated to extract `q`
   console.log("Search:", search);
@@ -31,6 +31,24 @@ musicRoutes.route("/musics").get(async (req, res) => {
     }
   } catch (err) {
     res.status(500).json({ error: err.message });
+  }
+});
+
+// CREATE
+musicRoutes.route("/musics").post(async (req, res) => {
+  try {
+    const db = database.getDb();
+    let data = {
+      title: req.body.title,
+      artist: req.body.artist,
+      album: req.body.album,
+      releaseDate: req.body.releaseDate,
+      genre: req.body.genre,
+    };
+    let result = await db.collection("musics").insertOne(data);
+    res.json(result);
+  } catch (err) {
+    res.status(401).json({ err: err.message });
   }
 });
 
