@@ -25,4 +25,3 @@ connect.connectToServer().then(() => {
     console.log("🚀 Server running on PORT:", PORT);
   });
 });
-console.log("Loaded PORT:", PORT); // should log 5000

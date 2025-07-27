@@ -3,13 +3,27 @@ const database = require("./connect");
 const ObjectId = require("mongodb").ObjectId;
 
 const musicRoutes = express.Router();
+//GET MUSICS with Search or Not
 
-// GET all musics
 musicRoutes.route("/musics").get(async (req, res) => {
-  console.log("you hit me mam");
+  const search = req.query.q?.trim(); // <- updated to extract `q`
+  console.log("Search:", search);
+
   try {
     const db = database.getDb();
-    const data = await db.collection("musics").find({}).toArray();
+    let query = {};
+
+    if (search) {
+      query = {
+        $or: [
+          { title: { $regex: search, $options: "i" } },
+          { artist: { $regex: search, $options: "i" } },
+          { album: { $regex: search, $options: "i" } },
+        ],
+      };
+    }
+
+    const data = await db.collection("musics").find(query).toArray();
     if (data.length > 0) {
       res.json(data);
     } else {
