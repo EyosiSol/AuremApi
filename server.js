@@ -1,9 +1,10 @@
-const connect = require("./connect");
-const express = require("express");
-const cors = require("cors");
-const musics = require("./musicRoutes");
+import { connectToServer } from "./connect.js";
+import express from "express";
+import cors from "cors";
+import musics from "./musicRoutes.js";
+import dotenv from "dotenv";
 
-require("dotenv").config({ path: "./config.env" }); // load .env here too
+dotenv.config({ path: "./config.env" }); // load .env here too
 
 const PORT = 3000;
 
@@ -19,7 +20,7 @@ app.use((req, res, next) => {
 
 app.use(musics);
 
-connect.connectToServer().then(() => {
+connectToServer().then(() => {
   console.log("DB connected");
   app.listen(PORT, () => {
     console.log("🚀 Server running on PORT:", PORT);

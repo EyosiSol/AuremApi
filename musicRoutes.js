@@ -1,6 +1,8 @@
-const express = require("express");
-const database = require("./connect");
-const ObjectId = require("mongodb").ObjectId;
+import express from "express";
+import { database, getDb } from "./connect.js";
+import mongo from "mongodb";
+
+const ObjectId = mongo.ObjectId;
 
 const musicRoutes = express.Router();
 
@@ -10,7 +12,7 @@ musicRoutes.route("/musics").get(async (req, res) => {
   console.log("Search:", search);
 
   try {
-    const db = database.getDb();
+    const db = getDb();
     let query = {};
 
     if (search) {
@@ -37,7 +39,7 @@ musicRoutes.route("/musics").get(async (req, res) => {
 // CREATE
 musicRoutes.route("/musics").post(async (req, res) => {
   try {
-    const db = database.getDb();
+    const db = getDb();
     let data = {
       title: req.body.title,
       artist: req.body.artist,
@@ -55,7 +57,7 @@ musicRoutes.route("/musics").post(async (req, res) => {
 // UPDATE | PATCH & PUT
 musicRoutes.route("/musics/:id").put(async (req, res) => {
   try {
-    const db = database.getDb();
+    const db = getDb();
     let data = {
       $set: {
         title: req.body.title,
@@ -76,7 +78,7 @@ musicRoutes.route("/musics/:id").put(async (req, res) => {
 
 musicRoutes.route("/musics/:id").patch(async (req, res) => {
   try {
-    const db = database.getDb();
+    const db = getDb();
     let data = {
       $set: {
         title: req.body.title,
@@ -99,7 +101,7 @@ musicRoutes.route("/musics/:id").patch(async (req, res) => {
 
 musicRoutes.route("/musics/:id").delete(async (req, res) => {
   try {
-    const db = database.getDb();
+    const db = getDb();
     let result = await db
       .collection("musics")
       .deleteOne({ _id: new ObjectId(req.params.id) });
@@ -109,4 +111,4 @@ musicRoutes.route("/musics/:id").delete(async (req, res) => {
   }
 });
 
-module.exports = musicRoutes;
+export default musicRoutes;
