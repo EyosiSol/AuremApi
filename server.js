@@ -1,8 +1,10 @@
 import { connectToServer } from "./connect.js";
 import express from "express";
 import cors from "cors";
-import musics from "./musicRoutes.js";
+import musics from "./routes/musicRoutes.js";
 import dotenv from "dotenv";
+import userRoutes from "./routes/userRoutes.js";
+import authRoutes from "./routes/authRoutes.js";
 
 dotenv.config({ path: "./config.env" }); // load .env here too
 
@@ -19,6 +21,8 @@ app.use((req, res, next) => {
 });
 
 app.use(musics);
+app.use(userRoutes);
+app.use(authRoutes);
 
 connectToServer().then(() => {
   console.log("DB connected");

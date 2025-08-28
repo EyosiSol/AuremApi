@@ -20,6 +20,7 @@ export const connectToServer = async () => {
   try {
     await client.connect(); // Actually connects to MongoDB
     database = client.db("musics");
+    database
     console.log("✅ Successfully connected to MongoDB");
   } catch (err) {
     console.error("❌ MongoDB connection failed:", err);

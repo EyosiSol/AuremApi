@@ -1,5 +1,5 @@
 import express from "express";
-import { database, getDb } from "./connect.js";
+import { getDb } from "../connect.js";
 import mongo from "mongodb";
 
 const ObjectId = mongo.ObjectId;
