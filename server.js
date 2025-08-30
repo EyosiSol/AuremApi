@@ -5,6 +5,7 @@ import musics from "./routes/musicRoutes.js";
 import dotenv from "dotenv";
 import userRoutes from "./routes/userRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
+import authMiddleware from "./middleware/authMiddleware.js";
 
 dotenv.config({ path: "./config.env" }); // load .env here too
 
@@ -20,9 +21,9 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use(musics);
-app.use(userRoutes);
 app.use(authRoutes);
+app.use(userRoutes);
+app.use(authMiddleware, musics);
 
 connectToServer().then(() => {
   console.log("DB connected");
