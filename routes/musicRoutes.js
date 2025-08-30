@@ -3,7 +3,6 @@ import { getDb } from "../connect.js";
 import mongo from "mongodb";
 
 const ObjectId = mongo.ObjectId;
-
 const musicRoutes = express.Router();
 
 // READ | GET MUSICS with Search or Not
@@ -56,7 +55,8 @@ musicRoutes.route("/:userId/musics").post(async (req, res) => {
 });
 
 // UPDATE | PATCH & PUT
-musicRoutes.route("/musics/:id").put(async (req, res) => {
+musicRoutes.route("/:userId/musics/:musicId").put(async (req, res) => {
+  const { userId, musicId } = req.params;
   try {
     const db = getDb();
     let data = {
@@ -64,20 +64,21 @@ musicRoutes.route("/musics/:id").put(async (req, res) => {
         title: req.body.title,
         artist: req.body.artist,
         album: req.body.album,
-        releaseDate: req.body.releaseDate,
+        releaseYear: req.body.releaseYear,
         genre: req.body.genre,
       },
     };
     let result = await db
       .collection("musics")
-      .updateOne({ _id: new ObjectId(req.params.id) }, data);
+      .updateOne({ _id: new ObjectId(musicId), userId: userId }, data);
     res.json(result);
   } catch (err) {
     res.status(401).json({ err: err.message });
   }
 });
 
-musicRoutes.route("/musics/:id").patch(async (req, res) => {
+musicRoutes.route("/:userId/musics/:musicId").patch(async (req, res) => {
+  const { userId, musicId } = req.params;
   try {
     const db = getDb();
     let data = {
@@ -85,16 +86,16 @@ musicRoutes.route("/musics/:id").patch(async (req, res) => {
         title: req.body.title,
         artist: req.body.artist,
         album: req.body.album,
-        releaseDate: req.body.releaseDate,
+        releaseYear: req.body.releaseYear,
         genre: req.body.genre,
       },
     };
     let result = await db
       .collection("musics")
-      .updateOne({ _id: new ObjectId(req.params.id) }, data);
+      .updateOne({ _id: new ObjectId(musicId), userId: userId }, data);
     res.json(result);
   } catch (err) {
-    res.status(401).json({ err: err.message });
+    res.status(401).json({ err: ecrr.message });
   }
 });
 
@@ -102,11 +103,14 @@ musicRoutes.route("/musics/:id").patch(async (req, res) => {
 
 musicRoutes.route("/:userId/musics/:musicId").delete(async (req, res) => {
   const { userId, musicId } = req.params;
+
+  console.log("musicId:", musicId, "userId:", userId);
+
   try {
     const db = getDb();
     let result = await db
       .collection("musics")
-      .deleteOne({ _id: new ObjectId(req.params.id), userId: userId });
+      .deleteOne({ _id: new ObjectId(musicId), userId: userId });
     res.json(result);
   } catch (err) {
     res.status(401).json({ err: err.message });
