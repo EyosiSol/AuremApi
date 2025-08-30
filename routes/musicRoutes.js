@@ -95,7 +95,7 @@ musicRoutes.route("/:userId/musics/:musicId").patch(async (req, res) => {
       .updateOne({ _id: new ObjectId(musicId), userId: userId }, data);
     res.json(result);
   } catch (err) {
-    res.status(401).json({ err: ecrr.message });
+    res.status(401).json({ err: err.message });
   }
 });
 
