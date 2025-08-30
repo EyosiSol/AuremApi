@@ -22,7 +22,6 @@ app.use((req, res, next) => {
 });
 
 app.use(authRoutes);
-app.use(userRoutes);
 app.use(authMiddleware, musics);
 
 connectToServer().then(() => {

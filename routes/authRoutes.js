@@ -3,29 +3,25 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { getDb } from "../connect.js";
 import mongo from "mongodb";
+
 import dotenv from "dotenv";
 dotenv.config({ path: "./config.env" }); // load .env here too
-
-const ObjectId = mongo.ObjectId;
 
 const authRoutes = express.Router();
 
 async function checkDB(email, db) {
-  console.log("checkdb");
   const result = await db.collection("users").findOne({ email });
   return result;
 }
 
 //Register
 authRoutes.route("/register").post(async (req, res) => {
-  console.log("reg hit");
   const { name, email, password } = req.body;
   const hashedPass = bcrypt.hashSync(password, 8);
   const date = new Date();
   const formatted = date.toISOString().replace("Z", "+00:00");
   try {
     const db = getDb();
-    console.log("register trying");
     const checkDb = await checkDB(email, db);
 
     if (!checkDb) {
@@ -68,10 +64,7 @@ authRoutes.route("/register").post(async (req, res) => {
 
 authRoutes.route("/login").post(async (req, res) => {
   const { email, password } = req.body;
-  console.log({
-    email: email,
-    password: password,
-  });
+
   try {
     const db = getDb();
     const user = await db.collection("users").findOne({ email });

@@ -9,7 +9,6 @@ const musicRoutes = express.Router();
 musicRoutes.route("/:userId/musics").get(async (req, res) => {
   const { userId } = req.params;
   const search = req.query.q?.trim(); // <- updated to extract `q`
-  console.log("Search:", search);
 
   try {
     const db = getDb();
@@ -103,8 +102,6 @@ musicRoutes.route("/:userId/musics/:musicId").patch(async (req, res) => {
 
 musicRoutes.route("/:userId/musics/:musicId").delete(async (req, res) => {
   const { userId, musicId } = req.params;
-
-  console.log("musicId:", musicId, "userId:", userId);
 
   try {
     const db = getDb();

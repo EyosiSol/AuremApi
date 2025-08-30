@@ -30,4 +30,3 @@ export const connectToServer = async () => {
 
 export const getDb = () => database;
 
-console.log("hi from db");
