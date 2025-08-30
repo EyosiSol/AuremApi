@@ -3,26 +3,23 @@ import { getDb } from "../connect.js";
 import mongo from "mongodb";
 
 const ObjectId = mongo.ObjectId;
-
 const musicRoutes = express.Router();
 
 // READ | GET MUSICS with Search or Not
-musicRoutes.route("/musics").get(async (req, res) => {
+musicRoutes.route("/:userId/musics").get(async (req, res) => {
+  const { userId } = req.params;
   const search = req.query.q?.trim(); // <- updated to extract `q`
   console.log("Search:", search);
 
   try {
     const db = getDb();
-    let query = {};
-
+    let query = { userId };
     if (search) {
-      query = {
-        $or: [
-          { title: { $regex: search, $options: "i" } },
-          { artist: { $regex: search, $options: "i" } },
-          { album: { $regex: search, $options: "i" } },
-        ],
-      };
+      query.$or = [
+        { title: { $regex: search, $options: "i" } },
+        { artist: { $regex: search, $options: "i" } },
+        { album: { $regex: search, $options: "i" } },
+      ];
     }
 
     const data = await db.collection("musics").find(query).toArray();
@@ -37,15 +34,18 @@ musicRoutes.route("/musics").get(async (req, res) => {
 });
 
 // CREATE
-musicRoutes.route("/musics").post(async (req, res) => {
+musicRoutes.route("/:userId/musics").post(async (req, res) => {
+  const { userId } = req.params;
   try {
     const db = getDb();
     let data = {
       title: req.body.title,
       artist: req.body.artist,
       album: req.body.album,
-      releaseDate: req.body.releaseDate,
+      releaseYear: req.body.releaseYear,
       genre: req.body.genre,
+      createdAt: new Date(),
+      userId: userId,
     };
     let result = await db.collection("musics").insertOne(data);
     res.json(result);
@@ -55,7 +55,8 @@ musicRoutes.route("/musics").post(async (req, res) => {
 });
 
 // UPDATE | PATCH & PUT
-musicRoutes.route("/musics/:id").put(async (req, res) => {
+musicRoutes.route("/:userId/musics/:musicId").put(async (req, res) => {
+  const { userId, musicId } = req.params;
   try {
     const db = getDb();
     let data = {
@@ -63,20 +64,21 @@ musicRoutes.route("/musics/:id").put(async (req, res) => {
         title: req.body.title,
         artist: req.body.artist,
         album: req.body.album,
-        releaseDate: req.body.releaseDate,
+        releaseYear: req.body.releaseYear,
         genre: req.body.genre,
       },
     };
     let result = await db
       .collection("musics")
-      .updateOne({ _id: new ObjectId(req.params.id) }, data);
+      .updateOne({ _id: new ObjectId(musicId), userId: userId }, data);
     res.json(result);
   } catch (err) {
     res.status(401).json({ err: err.message });
   }
 });
 
-musicRoutes.route("/musics/:id").patch(async (req, res) => {
+musicRoutes.route("/:userId/musics/:musicId").patch(async (req, res) => {
+  const { userId, musicId } = req.params;
   try {
     const db = getDb();
     let data = {
@@ -84,13 +86,13 @@ musicRoutes.route("/musics/:id").patch(async (req, res) => {
         title: req.body.title,
         artist: req.body.artist,
         album: req.body.album,
-        releaseDate: req.body.releaseDate,
+        releaseYear: req.body.releaseYear,
         genre: req.body.genre,
       },
     };
     let result = await db
       .collection("musics")
-      .updateOne({ _id: new ObjectId(req.params.id) }, data);
+      .updateOne({ _id: new ObjectId(musicId), userId: userId }, data);
     res.json(result);
   } catch (err) {
     res.status(401).json({ err: err.message });
@@ -99,12 +101,16 @@ musicRoutes.route("/musics/:id").patch(async (req, res) => {
 
 // Delete
 
-musicRoutes.route("/musics/:id").delete(async (req, res) => {
+musicRoutes.route("/:userId/musics/:musicId").delete(async (req, res) => {
+  const { userId, musicId } = req.params;
+
+  console.log("musicId:", musicId, "userId:", userId);
+
   try {
     const db = getDb();
     let result = await db
       .collection("musics")
-      .deleteOne({ _id: new ObjectId(req.params.id) });
+      .deleteOne({ _id: new ObjectId(musicId), userId: userId });
     res.json(result);
   } catch (err) {
     res.status(401).json({ err: err.message });
