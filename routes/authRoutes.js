@@ -39,19 +39,19 @@ authRoutes.route("/register").post(async (req, res) => {
           expiresIn: "24h",
         }
       );
-      res.json({
-        token: token,
-        user: {
-          id: result.insertedId,
-          name: name,
-          email: email,
-          createdAt: formatted,
-        },
-        status: {
-          message: "User Created Successfully",
-          // code: res.sendStatus(201),
-        },
-      });
+        res.json({
+          token: token,
+          user: {
+            id: result.insertedId,
+            name: name,
+            email: email,
+            createdAt: formatted,
+          },
+          status: {
+            message: "User Created Successfully",
+            // code: res.sendStatus(201),
+          },
+        });
     }
     res.json({
       message: "User exists already",

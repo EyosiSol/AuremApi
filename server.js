@@ -3,10 +3,9 @@ import express from "express";
 import cors from "cors";
 import musics from "./routes/musicRoutes.js";
 import dotenv from "dotenv";
-import userRoutes from "./routes/userRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
 import authMiddleware from "./middleware/authMiddleware.js";
-
+import userRoutes from "./routes/userRoute.js";
 dotenv.config({ path: "./config.env" }); // load .env here too
 
 const PORT = 3000;
@@ -23,6 +22,7 @@ app.use((req, res, next) => {
 
 app.use(authRoutes);
 app.use(authMiddleware, musics);
+app.use(authMiddleware, userRoutes);
 
 connectToServer().then(() => {
   console.log("DB connected");
