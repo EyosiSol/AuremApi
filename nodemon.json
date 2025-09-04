@@ -1,6 +1,6 @@
 {
-  "watch": ["server.js", "musicRoutes.js", "connect.js"],
+  "watch": ["src/server.js", "src/routes/musicRoutes.js", "src/config/db.js"],
   "ext": "js,json",
   "ignore": ["node_modules"],
-  "exec": "node server.js"
+  "exec": "node src/server.js"
 }

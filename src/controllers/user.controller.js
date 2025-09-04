@@ -1,11 +1,10 @@
-import express from "express";
-import { getDb } from "../connect.js";
+import bcrypt from "bcryptjs";
+import { getDb } from "../config/db.js";
 import mongo from "mongodb";
 
 const ObjectId = mongo.ObjectId;
-const userRoutes = express.Router();
 
-userRoutes.route("/:userId/profile").get(async (req, res) => {
+export const GetProfile = async (req, res) => {
   const { userId } = req.params;
   try {
     const db = getDb();
@@ -18,9 +17,9 @@ userRoutes.route("/:userId/profile").get(async (req, res) => {
   } catch (err) {
     res.status(401).json({ message: err.message });
   }
-});
+};
 
-userRoutes.route("/:userId/profile").patch(async (req, res) => {
+export const UpdateProfile = async (req, res) => {
   const { userId } = req.params;
   const { name, oldPassword, newPassword } = req.body;
   try {
@@ -59,6 +58,4 @@ userRoutes.route("/:userId/profile").patch(async (req, res) => {
   } catch (err) {
     res.status(401).json({ message: err.message });
   }
-});
-
-export default userRoutes;
+};

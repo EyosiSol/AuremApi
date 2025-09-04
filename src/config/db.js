@@ -14,13 +14,13 @@ const client = new MongoClient(uri, {
   },
 });
 
-export let database;
+let database;
 
 export const connectToServer = async () => {
   try {
     await client.connect(); // Actually connects to MongoDB
     database = client.db("musics");
-    database
+    database;
     console.log("✅ Successfully connected to MongoDB");
   } catch (err) {
     console.error("❌ MongoDB connection failed:", err);
@@ -29,4 +29,3 @@ export const connectToServer = async () => {
 };
 
 export const getDb = () => database;
-

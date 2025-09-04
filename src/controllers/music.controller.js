@@ -1,12 +1,9 @@
-import express from "express";
-import { getDb } from "../connect.js";
+import { getDb } from "../config/db.js";
 import mongo from "mongodb";
 
 const ObjectId = mongo.ObjectId;
-const musicRoutes = express.Router();
 
-// READ | GET MUSICS with Search or Not
-musicRoutes.route("/:userId/musics").get(async (req, res) => {
+export const GetMusic = async (req, res) => {
   const { userId } = req.params;
   const search = req.query.q?.trim(); // <- updated to extract `q`
 
@@ -30,10 +27,9 @@ musicRoutes.route("/:userId/musics").get(async (req, res) => {
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
-});
+};
 
-// CREATE
-musicRoutes.route("/:userId/musics").post(async (req, res) => {
+export const AddMusic = async (req, res) => {
   const { userId } = req.params;
   try {
     const db = getDb();
@@ -51,10 +47,9 @@ musicRoutes.route("/:userId/musics").post(async (req, res) => {
   } catch (err) {
     res.status(401).json({ err: err.message });
   }
-});
+};
 
-// UPDATE | PATCH & PUT
-musicRoutes.route("/:userId/musics/:musicId").put(async (req, res) => {
+export const UpdateMusic = async (req, res) => {
   const { userId, musicId } = req.params;
   try {
     const db = getDb();
@@ -74,33 +69,9 @@ musicRoutes.route("/:userId/musics/:musicId").put(async (req, res) => {
   } catch (err) {
     res.status(401).json({ err: err.message });
   }
-});
+};
 
-musicRoutes.route("/:userId/musics/:musicId").patch(async (req, res) => {
-  const { userId, musicId } = req.params;
-  try {
-    const db = getDb();
-    let data = {
-      $set: {
-        title: req.body.title,
-        artist: req.body.artist,
-        album: req.body.album,
-        releaseYear: req.body.releaseYear,
-        genre: req.body.genre,
-      },
-    };
-    let result = await db
-      .collection("musics")
-      .updateOne({ _id: new ObjectId(musicId), userId: userId }, data);
-    res.json(result);
-  } catch (err) {
-    res.status(401).json({ err: err.message });
-  }
-});
-
-// Delete
-
-musicRoutes.route("/:userId/musics/:musicId").delete(async (req, res) => {
+export const DeleteMusic = async (req, res) => {
   const { userId, musicId } = req.params;
 
   try {
@@ -112,6 +83,4 @@ musicRoutes.route("/:userId/musics/:musicId").delete(async (req, res) => {
   } catch (err) {
     res.status(401).json({ err: err.message });
   }
-});
-
-export default musicRoutes;
+};
