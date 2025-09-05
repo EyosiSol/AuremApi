@@ -1,21 +1,17 @@
-import express from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import { getDb } from "../connect.js";
+import { getDb } from "../config/db.js";
 import mongo from "mongodb";
 
 import dotenv from "dotenv";
 dotenv.config({ path: "./config.env" }); // load .env here too
-
-const authRoutes = express.Router();
 
 async function checkDB(email, db) {
   const result = await db.collection("users").findOne({ email });
   return result;
 }
 
-//Register
-authRoutes.route("/register").post(async (req, res) => {
+export const SignUp = async (req, res) => {
   const { name, email, password } = req.body;
   const hashedPass = bcrypt.hashSync(password, 8);
   const date = new Date();
@@ -39,19 +35,19 @@ authRoutes.route("/register").post(async (req, res) => {
           expiresIn: "24h",
         }
       );
-        res.json({
-          token: token,
-          user: {
-            id: result.insertedId,
-            name: name,
-            email: email,
-            createdAt: formatted,
-          },
-          status: {
-            message: "User Created Successfully",
-            // code: res.sendStatus(201),
-          },
-        });
+      res.json({
+        token: token,
+        user: {
+          id: result.insertedId,
+          name: name,
+          email: email,
+          createdAt: formatted,
+        },
+        status: {
+          message: "User Created Successfully",
+          // code: res.sendStatus(201),
+        },
+      });
     }
     res.json({
       message: "User exists already",
@@ -60,9 +56,9 @@ authRoutes.route("/register").post(async (req, res) => {
   } catch (err) {
     res.status(401).json({ message: err.message });
   }
-});
+};
 
-authRoutes.route("/login").post(async (req, res) => {
+export const LogIn = async (req, res) => {
   const { email, password } = req.body;
 
   try {
@@ -99,6 +95,4 @@ authRoutes.route("/login").post(async (req, res) => {
   } catch (err) {
     res.status(401).json({ err: err.message });
   }
-});
-
-export default authRoutes;
+};
