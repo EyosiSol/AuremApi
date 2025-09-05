@@ -7,7 +7,7 @@ const musicSchema = mongoose.Schema(
     album: String,
     releaseYear: Number,
     genre: String,
-    userId: String,
+    userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   },
   { timestamps: true }
 );
