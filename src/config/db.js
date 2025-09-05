@@ -1,30 +1,20 @@
-import { MongoClient, ServerApiVersion } from "mongodb";
-
+// src/config/db.js
+import mongoose from "mongoose";
 import dotenv from "dotenv";
 
-dotenv.config({ path: "./config.env" }); // load .env here too
+dotenv.config({ path: "./config.env" }); // load env
 
-const uri = process.env.DATABASE_URI;
-
-const client = new MongoClient(uri, {
-  serverApi: {
-    version: ServerApiVersion.v1,
-    strict: true,
-    deprecationErrors: true,
-  },
-});
-
-let database;
-
-export const connectToServer = async () => {
+export const connectDb = async () => {
   try {
-    await client.connect(); // Actually connects to MongoDB
-    database = client.db("musics");
-    console.log("✅ Successfully connected to MongoDB");
+    await mongoose.connect(process.env.DATABASE_URI, {
+      dbName: "musics",
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+
+    console.log("✅ Successfully connected to MongoDB (Mongoose)");
   } catch (err) {
-    console.error("❌ MongoDB connection failed:", err);
-    process.exit(1); // Exit if connection fails
+    console.error("❌ MongoDB connection failed:", err.message);
+    process.exit(1);
   }
 };
-
-export const getDb = () => database;
