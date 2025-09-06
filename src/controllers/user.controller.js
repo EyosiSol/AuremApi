@@ -1,6 +1,5 @@
-import bcrypt from "bcryptjs";
-import mongo from "mongodb";
 import User from "../models/user.model.js";
+import { comparePassword, hashPassword } from "../utils/password.js";
 
 export const GetProfile = async (req, res) => {
   const { userId } = req.params;
@@ -40,10 +39,11 @@ export const UpdateProfile = async (req, res) => {
           .json({ message: "Old password required to set a new one" });
       }
 
-      const isMatch = await bcrypt.compare(oldPassword, user.password);
+      const isMatch = await comparePassword(oldPassword, user.password);
+
       if (!isMatch) return res.status(401).json({ message: "Wrong password" });
 
-      updateFields.password = await bcrypt.hash(newPassword, 8);
+      updateFields.password = await hashPassword(newPassword);
     }
 
     // 4. Update user and return updated doc

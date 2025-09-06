@@ -1,8 +1,8 @@
-import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
 import dotenv from "dotenv";
 import User from "../models/user.model.js";
+import { comparePassword, hashPassword } from "../utils/password.js";
 dotenv.config({ path: "./config.env" }); // load .env here too
 
 async function check(email) {
@@ -12,7 +12,9 @@ async function check(email) {
 
 export const SignUp = async (req, res) => {
   const { name, email, password } = req.body;
-  const hashedPass = bcrypt.hashSync(password, 8);
+
+  const hashedPass = hashPassword(password);
+
   try {
     const checked = await check(email);
     console.log("checked:", checked);
@@ -66,7 +68,8 @@ export const LogIn = async (req, res) => {
     if (!user) return res.status(404).json({ message: "User not found" });
 
     // Check password
-    const validPass = bcrypt.compareSync(password, user.password);
+    const validPass = comparePassword(password, user.password);
+
     if (!validPass) {
       return res.status(401).json({ message: "Invalid Password" });
     }
