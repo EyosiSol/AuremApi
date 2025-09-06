@@ -1,14 +1,11 @@
-import { getDb } from "../config/db.js";
 import mongo from "mongodb";
-
-const ObjectId = mongo.ObjectId;
+import Music from "../models/music.model.js";
 
 export const GetMusic = async (req, res) => {
   const { userId } = req.params;
-  const search = req.query.q?.trim(); // <- updated to extract `q`
+  const search = req.query.q?.trim();
 
   try {
-    const db = getDb();
     let query = { userId };
     if (search) {
       query.$or = [
@@ -18,41 +15,41 @@ export const GetMusic = async (req, res) => {
       ];
     }
 
-    const data = await db.collection("musics").find(query).toArray();
-    if (data.length > 0) {
-      res.json(data);
-    } else {
-      res.status(404).json({ message: "No musics found" });
-    }
+    const data = await Music.find(query);
+    console.log("data:", data);
+    data.length > 0
+      ? res.json(data)
+      : res.status(404).json({ message: "no music found" });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(401).json({ err: err.message });
   }
 };
 
 export const AddMusic = async (req, res) => {
   const { userId } = req.params;
   try {
-    const db = getDb();
     let data = {
       title: req.body.title,
       artist: req.body.artist,
       album: req.body.album,
       releaseYear: req.body.releaseYear,
       genre: req.body.genre,
-      createdAt: new Date(),
       userId: userId,
     };
-    let result = await db.collection("musics").insertOne(data);
-    res.json(result);
+    console.log("data:", data);
+    let result = await Music.create(data);
+    res.json({
+      status: 200,
+      message: "Created Successfully",
+    });
   } catch (err) {
-    res.status(401).json({ err: err.message });
+    res.status(401).json({ message: err.message });
   }
 };
 
 export const UpdateMusic = async (req, res) => {
   const { userId, musicId } = req.params;
   try {
-    const db = getDb();
     let data = {
       $set: {
         title: req.body.title,
@@ -62,25 +59,39 @@ export const UpdateMusic = async (req, res) => {
         genre: req.body.genre,
       },
     };
-    let result = await db
-      .collection("musics")
-      .updateOne({ _id: new ObjectId(musicId), userId: userId }, data);
-    res.json(result);
+    const result = await Music.updateOne({ _id: musicId, userId }, data);
+    result.modifiedCount > 0
+      ? res.json({
+          status: 200,
+          result: result,
+          message: "Updated Successfully",
+        })
+      : res.json({
+          status: 500,
+          result: result,
+          message: "Updated Failed",
+        });
   } catch (err) {
-    res.status(401).json({ err: err.message });
+    res.status(401).json({ message: err.message });
   }
 };
 
 export const DeleteMusic = async (req, res) => {
   const { userId, musicId } = req.params;
-
   try {
-    const db = getDb();
-    let result = await db
-      .collection("musics")
-      .deleteOne({ _id: new ObjectId(musicId), userId: userId });
-    res.json(result);
+    const result = await Music.deleteOne({ _id: musicId, userId });
+    result.deletedCount > 0
+      ? res.json({
+          status: 200,
+          result: result,
+          message: "Deleted Successfully",
+        })
+      : res.json({
+          status: 500,
+          result: result,
+          message: "Deleting Failed",
+        });
   } catch (err) {
-    res.status(401).json({ err: err.message });
+    res.status(401).json({ message: err.message });
   }
 };

@@ -1,19 +1,12 @@
-import bcrypt from "bcryptjs";
-import { getDb } from "../config/db.js";
-import mongo from "mongodb";
-
-const ObjectId = mongo.ObjectId;
+import User from "../models/user.model.js";
+import { comparePassword, hashPassword } from "../utils/password.js";
 
 export const GetProfile = async (req, res) => {
   const { userId } = req.params;
   try {
-    const db = getDb();
-
-    const data = await db
-      .collection("users")
-      .findOne({ _id: new ObjectId(userId) });
-    console.log("data:", data);
-    res.json(data);
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({ message: "User not found" });
+    res.json(user);
   } catch (err) {
     res.status(401).json({ message: err.message });
   }
@@ -22,40 +15,53 @@ export const GetProfile = async (req, res) => {
 export const UpdateProfile = async (req, res) => {
   const { userId } = req.params;
   const { name, oldPassword, newPassword } = req.body;
+
   try {
-    const db = getDb();
-    let user = await db
-      .collection("users")
-      .findOne({ _id: new ObjectId(userId) });
-    if (!user) {
-      return res.status(401).json({ message: "user not found" });
+    // 1. Validate userId
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({ message: "Invalid user ID" });
     }
 
-    const isMatch = bcrypt.compareSync(oldPassword, user.password);
-    if (!isMatch) {
-      res.status(401).json({ message: "Password Doesn't match" });
+    // 2. Find user
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    // 3. Build update object
+    const updateFields = {};
+
+    if (name) updateFields.name = name;
+
+    if (newPassword) {
+      // Require oldPassword to change password
+      if (!oldPassword) {
+        return res
+          .status(400)
+          .json({ message: "Old password required to set a new one" });
+      }
+
+      const isMatch = await comparePassword(oldPassword, user.password);
+
+      if (!isMatch) return res.status(401).json({ message: "Wrong password" });
+
+      updateFields.password = await hashPassword(newPassword);
     }
 
-    const hashedNew = bcrypt.hashSync(newPassword, 8);
-
-    const update = {
-      $set: {
-        ...(name && { name }),
-        password: hashedNew,
-      },
-    };
-
-    let response = await db.collection("users").updateOne(
-      {
-        _id: new ObjectId(userId),
-      },
-      update
+    // 4. Update user and return updated doc
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { $set: updateFields },
+      { new: true }
     );
-    if (response.modifiedCount === 0) {
-      return res.status(400).json({ message: "No changes applied" });
-    }
-    res.json({ message: "Profile updated successfully" });
+
+    res.json({
+      message: "User updated successfully",
+      user: {
+        id: updatedUser._id,
+        name: updatedUser.name,
+        email: updatedUser.email,
+      },
+    });
   } catch (err) {
-    res.status(401).json({ message: err.message });
+    res.status(500).json({ message: err.message });
   }
 };
