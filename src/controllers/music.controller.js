@@ -37,7 +37,7 @@ export const AddMusic = async (req, res) => {
       userId: userId,
     };
     console.log("data:", data);
-    let result = Music.insertOne(data);
+    let result = await Music.create(data);
     res.json({
       status: 200,
       message: "Created Successfully",
