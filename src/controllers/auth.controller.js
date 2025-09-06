@@ -26,7 +26,7 @@ export const SignUp = async (req, res) => {
       password: hashedPass,
     };
 
-    let result = await User.insertOne(userdata);
+    let result = await User.create(userdata);
 
     console.log("result:", result);
 
