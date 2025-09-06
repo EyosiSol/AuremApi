@@ -13,7 +13,7 @@ async function check(email) {
 export const SignUp = async (req, res) => {
   const { name, email, password } = req.body;
 
-  const hashedPass = hashPassword(password);
+  const hashedPass = await hashPassword(password);
 
   try {
     const checked = await check(email);
