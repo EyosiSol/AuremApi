@@ -5,6 +5,8 @@ import User from "../models/user.model.js";
 import { comparePassword, hashPassword } from "../utils/password.js";
 dotenv.config({ path: "./config.env" }); // load .env here too
 
+const JWT_SECRET = process.env.JWT_SECRET;
+
 async function check(email) {
   const result = await User.findOne({ email });
   return result;
@@ -17,7 +19,6 @@ export const SignUp = async (req, res) => {
 
   try {
     const checked = await check(email);
-    console.log("checked:", checked);
     if (checked) return res.json({ message: "User exists already" });
 
     let userdata = {
@@ -28,14 +29,12 @@ export const SignUp = async (req, res) => {
 
     let result = await User.create(userdata);
 
-    console.log("result:", result);
-
     const token = jwt.sign(
       { id: result._id.toString() },
       process.env.JWT_SECRET,
       {
         expiresIn: "24h",
-      }
+      },
     );
     res.json({
       token: token,
@@ -57,10 +56,6 @@ export const SignUp = async (req, res) => {
 
 export const LogIn = async (req, res) => {
   const { email, password } = req.body;
-  console.log({
-    email: email,
-    password: password,
-  });
 
   try {
     // Find user by email
@@ -75,11 +70,9 @@ export const LogIn = async (req, res) => {
     }
 
     // Generate token
-    const token = jwt.sign(
-      { id: user._id.toString() },
-      process.env.JWT_SECRET,
-      { expiresIn: "24h" }
-    );
+    const token = jwt.sign({ id: user._id.toString() }, JWT_SECRET, {
+      expiresIn: "24h",
+    });
 
     res.json({
       token,
@@ -92,6 +85,7 @@ export const LogIn = async (req, res) => {
         message: "Logged In Successfully",
       },
     });
+    console.log("res:", res);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

@@ -23,3 +23,6 @@ musicRouter.patch("/:userId/musics/:musicId", UpdateMusic);
 musicRouter.delete("/:userId/musics/:musicId", DeleteMusic);
 
 export default musicRouter;
+
+
+// GET https://auremApi.com/hsdkfhsdf77237498hsbkdjfh/musics  

@@ -15,10 +15,9 @@ export const GetMusic = async (req, res) => {
       ];
     }
 
-    const data = await Music.find(query);
-    console.log("data:", data);
+    const data = await Music.find(query); //async
     data.length > 0
-      ? res.json(data)
+      ? res.json(data) //res -> responde 
       : res.status(404).json({ message: "no music found" });
   } catch (err) {
     res.status(401).json({ err: err.message });
@@ -36,7 +35,6 @@ export const AddMusic = async (req, res) => {
       genre: req.body.genre,
       userId: userId,
     };
-    console.log("data:", data);
     let result = await Music.create(data);
     res.json({
       status: 200,
